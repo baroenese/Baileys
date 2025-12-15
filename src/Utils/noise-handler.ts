@@ -187,7 +187,8 @@ export const makeNoiseHandler = ({
 			await mixIntoKey(Curve.sharedKey(privateKey, decStaticContent))
 
 			const certDecoded = decrypt(serverHello!.payload!)
-			const { intermediate: certIntermediate } = proto.CertChain.decode(certDecoded)
+			const { intermediate: certIntermediate /*leaf*/ } = proto.CertChain.decode(certDecoded)
+			// TODO: handle this leaf stuff
 			const { issuerSerial } = proto.CertChain.NoiseCertificate.Details.decode(certIntermediate!.details!)
 
 			if (issuerSerial !== WA_CERT_DETAILS.SERIAL) {
