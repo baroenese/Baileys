@@ -70,7 +70,7 @@ export const makeNoiseHandler = ({
 	let counter = 0
 	let sentIntro = false
 
-	let inBytes: Buffer<ArrayBufferLike> = Buffer.alloc(0)
+	let inBytes: Buffer = Buffer.alloc(0)
 
 	let transport: TransportState | null = null
 	let isWaitingForTransport = false
@@ -155,7 +155,7 @@ export const makeNoiseHandler = ({
 			if (inBytes.length < size + 3) return
 
 			let frame: Uint8Array | BinaryNode = inBytes.subarray(3, size + 3)
-			inBytes = inBytes.subarray(size + 3)
+			inBytes = Buffer.from(inBytes.subarray(size + 3))
 
 			if (transport) {
 				const result = transport.decrypt(frame)
@@ -230,7 +230,7 @@ export const makeNoiseHandler = ({
 			}
 
 			if (inBytes.length === 0) {
-				inBytes = Buffer.isBuffer(newData) ? newData : Buffer.from(newData)
+				inBytes = Buffer.from(newData)
 			} else {
 				inBytes = Buffer.concat([inBytes, newData])
 			}
