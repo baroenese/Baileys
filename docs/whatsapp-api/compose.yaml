@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Redis Server
+  redis:
+    image: redis:alpine
+    container_name: whatsapp-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    # Enable AOF persistence and set a password
+    command: redis-server --appendonly yes --requirepass "baileys_password"
+    networks:
+      - whatsapp-network
+
+  # Redis UI (Redis Commander)
+  redis-ui:
+    image: rediscommander/redis-commander:latest
+    container_name: whatsapp-redis-ui
+    restart: always
+    environment:
+      # Format: label:host:port:dbIndex:password
+      - REDIS_HOSTS=local:redis:6379:0:baileys_password
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - whatsapp-network
+
+volumes:
+  redis_data:
+
+networks:
+  whatsapp-network:
+    driver: bridge
